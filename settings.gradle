@@ -1,0 +1,3 @@
+println('---------------初始化阶段开始')
+include ':app', ':lib1', ':buildSrc'
+rootProject.name='GradleStudy'

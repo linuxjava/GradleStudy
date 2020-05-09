@@ -1,0 +1,352 @@
+import groovy.xml.MarkupBuilder
+
+//****************************************task创建*****************************************
+//task helloTask1(){
+//    println '----------------helloTask1'
+//}
+//
+//task helloTask2{
+//    println '----------------helloTask2'
+//}
+//
+//this.tasks.create(name: 'helloTask3'){
+//    setGroup('testTask')
+//    setDescription('test.....')
+//    println '----------------helloTask3'
+//}
+//
+//task helloTask4(group:'testTask', description:'-----test'){
+//    println '----------------helloTask4'
+//}
+
+//****************************************task查找*****************************************
+//println 'findByName: ' + this.tasks.getByName('preBuild').name
+//this.tasks.findAll {Task task ->
+//    println '--------' + task.name
+//}
+
+//****************************************task执行*****************************************
+
+//task taskExec(group:'testTask', description:'-----test'){
+//    println '----------------taskExec'
+//    doFirst{
+//        println '----------------doFirst3'
+//    }
+//    doFirst{
+//        println '----------------doFirst4'
+//    }
+//    doLast{
+//        println '----------------doLast3'
+//    }
+//    doLast{
+//        println '----------------doLast4'
+//    }
+//}
+//taskExec.doFirst{
+//    println '----------------doFirst1'
+//}
+//taskExec.doFirst{
+//    println '----------------doFirst2'
+//}
+//taskExec.doLast{
+//    println '----------------doLast1'
+//}
+//taskExec.doLast{
+//    println '----------------doLast2'
+//}
+
+//****************************************统计build事件*****************************************
+//def startTime, endTime
+//this.afterEvaluate {Project project ->
+//    project.tasks.getByName('preBuild').doFirst{
+//        startTime = System.currentTimeMillis();
+//    }
+//    project.tasks.getByName('build').doLast {
+//        endTime = System.currentTimeMillis();
+//        println "-------------------build总时长: '${endTime - startTime}'"
+//    }
+//}
+
+//****************************************task依赖*****************************************
+//***************dependsOn**************
+//静态依赖
+//task taskX{
+//    doLast{
+//        println 'taskX'
+//    }
+//}
+//
+//task taskY{
+//    doLast{
+//        println 'taskY'
+//    }
+//}
+//
+//task taskZ(dependsOn: [taskX, taskY] ){
+//    doLast{
+//        println 'taskZ'
+//    }
+//}
+
+//动态依赖
+//task libX{
+//    doLast{
+//        println 'libX'
+//    }
+//}
+//
+//task libY{
+//    doLast{
+//        println 'libY'
+//    }
+//}
+//
+//task nolib{
+//    doLast{
+//        println 'nolib'
+//    }
+//}
+//
+//task app{
+//    dependsOn this.tasks.findAll {Task task ->
+//            return task.name.startsWith('lib')
+//    }
+//    doLast{
+//        println 'app'
+//    }
+//}
+
+//mustRunAfter与shouldRunAfter
+//task taskX{
+//    //mustRunAfter 'taskY'
+//    doLast {
+//        println '------------taskX'
+//    }
+//}
+//taskX.mustRunAfter 'taskY'
+//
+//task taskY{
+//    mustRunAfter 'taskZ'
+//    doLast {
+//        println '------------taskY'
+//    }
+//}
+//
+//task taskZ{
+//    doLast {
+//        println '------------taskZ'
+//    }
+//}
+
+// finalizedBy
+//task taskX{
+//    finalizedBy 'taskY'
+//    finalizedBy 'taskZ'
+//    doLast {
+//        println '------------taskX'
+//    }
+//}
+//
+//task taskY{
+//    doLast {
+//        println '------------taskY'
+//    }
+//}
+//
+//task taskZ{
+//    doLast {
+//        println '------------taskZ'
+//    }
+//}
+
+//taskX.finalizedBy 'taskY', 'taskZ'
+
+//****************************************xml解析*****************************************
+//task handleReleaseFile {
+//    doLast {
+//        def srcFile = file('releases.xml')
+//        def dstDir = new File(this.buildDir, '/generated/release')
+//        dstDir.mkdir()
+//        def releases = new XmlParser().parse(srcFile);
+//        releases.release.each { releaseNode ->
+//            def versionCode = releaseNode.versionCode.text()
+//            def versionName = releaseNode.versionName.text()
+//            def versionInfo = releaseNode.versionInfo.text()
+//
+//            def dstFile = new File(dstDir, "release-${versionName}.txt")
+//            dstFile.withWriter {writer ->
+//                writer.write("${versionName}->${versionCode}->${versionInfo}")
+//            }
+//        }
+//    }
+//}
+//
+//task testDoReleaseFile(dependsOn: handleReleaseFile){
+//    println '-------开始解析'
+//}
+
+//ext {
+//    versionName = '1.0.9'
+//    versionCode = '108'
+//    versionInfo = 'test.................'
+//    dstFile = file('releases.xml')
+//    if (dstFile != null && !dstFile.exists()) {
+//        dstFile.createNewFile()
+//    }
+//}
+//
+//class VersionMsg {
+//    String versionName
+//    String versionCode
+//    String versionInfo
+//}
+//
+//task writeReleaseInfo {
+//    inputs.property('versionName', this.versionName)
+//    inputs.property('versionCode', this.versionCode)
+//    inputs.property('versionInfo', this.versionInfo)
+//    outputs.file this.dstFile
+//
+//    doLast {
+//        File outFile = outputs.getFiles().getSingleFile()
+//        def data = inputs.getProperties()
+//        def versionMsg = new VersionMsg(data);
+//
+//        def sw = new StringWriter();
+//        def xmlBuilder = new MarkupBuilder(sw)
+//        if (outFile.text != null && outFile.text.size() > 0) {
+//            //文件有内容
+//            //创建节点
+//            xmlBuilder.release {
+//                versionName(versionMsg.versionName)
+//                versionCode(versionMsg.versionCode)
+//                versionInfo(versionMsg.versionInfo)
+//            }
+//
+//            //获取已有数据
+//            List<String> lines = outFile.readLines()
+//            def length = lines.size() - 1
+//
+//            outFile.withWriter { BufferedWriter writer ->
+//                //此处index从0开始
+//                lines.eachWithIndex { String entry, int index ->
+//                    if (length == index) {
+//                        writer.append(sw.toString() + '\r\n')
+//                    }
+//
+//                    writer.append(entry + '\r\n')
+//                }
+//            }
+//
+//        } else {
+//            //文件没有内容
+//            xmlBuilder.releases {
+//                release {
+//                    versionName(versionMsg.versionName)
+//                    versionCode(versionMsg.versionCode)
+//                    versionInfo(versionMsg.versionInfo)
+//                }
+//            }
+//
+//            outFile.withWriter { BufferedWriter writer ->
+//                writer.append(sw.toString())
+//            }
+//        }
+//    }
+//}
+//
+//task readReleaseFile {
+//    inputs.file this.dstFile
+//    doLast {
+//        File inputFile = inputs.getFiles().getSingleFile()
+//        println inputFile.text
+//    }
+//}
+//
+//task testReleaseFile(dependsOn: [writeReleaseInfo, readReleaseFile]) {
+//    doLast {
+//        println '输入输出任务结束'
+//    }
+//}
+
+//****************************************增量式构建*****************************************
+//task combineFileContentNonIncremental {
+//    def sources = fileTree('sourceDir')
+//
+//    def destination = file('destination.txt')
+//
+//    doLast {
+//        destination.withPrintWriter { writer ->
+//            sources.each {source ->
+//                writer.println source.text
+//            }
+//        }
+//    }
+//}
+//
+//task combineFileContentIncremental {
+//    def sources = fileTree('sourceDir')
+//    def destination = file('destination.txt')
+//
+//    inputs.dir sources
+//    outputs.file destination
+//
+//    doLast {
+//        destination.withPrintWriter { writer ->
+//            sources.each {source ->
+//                writer.println source.text
+//            }
+//        }
+//    }
+//}
+
+//********************************Task挂接到构建系统中**********************************
+
+//task demo{
+//    doLast{
+//        printFile('E:\\Workspace\\Android\\GradleStudy\\app\\build\\intermediates\\classes\\release\\com')
+//    }
+//}
+//
+//def printFile(String path) {
+//    println '11111111111111111111111111111111111'
+//    project.fileTree(path){ FileTree fileTree ->
+//        println '11111111111111111111111111111111112'
+//        fileTree.visit { FileTreeElement element ->
+//            println element.name
+////            if (element.name.startsWith('com')) {
+////                if (element.directory) {
+////                    printFile(element.file.absolutePath)
+////                } else {
+////                    println 'filename*****' + file.name
+////                }
+////            }
+//        }
+//    }
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

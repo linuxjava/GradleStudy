@@ -1,0 +1,155 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.1'
+        
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+//****************************************gradle生命周期*****************************************
+/**
+ * gradle生命周期(初始化、配置、编译)
+ * 1.初始化阶段是针对于整个项目的，只会执行一次，从settings.gradle开始执行
+ * 2.每个project都有自己的配置、编译阶段
+ * 3.as中的每个module都是一个gradle中的一个project，包括根工程
+ */
+
+//配置执行前
+//如果写在gradle中就是指当前project
+//beforeEvaluate {
+//    println("---------------'${sub.name}'配置阶段开始(初始化阶段结束)")
+//}
+//添加每个project的beforeEvaluate监听
+this.allprojects {Project sub ->
+    sub.beforeEvaluate {
+        println("---------------'${sub.name}'配置阶段开始(初始化阶段结束)")
+    }
+    //或
+//    sub.gradle.beforeProject {
+//        println("---------------'${sub.name}'配置阶段开始(初始化阶段结束)1")
+//    }
+}
+
+
+//配置执行后
+//this.afterEvaluate {
+//    println('---------------配置阶段结束(编译阶段开始)')
+//}
+
+this.allprojects {Project sub ->
+    sub.afterEvaluate {
+        println("---------------'${sub.name}'配置阶段结束(编译阶段开始)")
+    }
+    //或
+//    sub.gradle.afterProject {
+//        println("---------------'${sub.name}'编译阶段开始(配置化阶段结束)")
+//    }
+}
+
+//整个工程编译完成
+//this.gradle.buildFinished {
+//    println('---------------所有工程编译阶段结束')
+//}
+
+this.allprojects {Project project ->
+    project.gradle.buildFinished {
+        println("---------------'${project.name}'编译结束")
+    }
+}
+
+//****************************************project相关api*****************************************
+getprojects()
+def getprojects(){
+    println '------------'
+    println 'Root Project'
+    println '------------'
+    this.getAllprojects().eachWithIndex { Project project, int index ->
+        if(index == 0){
+            println "Root project '${project.name}'"
+        }else {
+            println "+--- project '${project.name}'"
+        }
+    }
+}
+
+getSubpro()
+def getSubpro(){
+    println '------------'
+    println 'Sub Project'
+    println '------------'
+    this.getSubprojects().eachWithIndex { Project project, int index ->
+        println "+--- project '${project.name}'"
+    }
+}
+
+project('app'){Project project ->
+    println '工程build目录路径: ' + project.getBuildDir().path
+}
+
+//****************************************属性相关Api*****************************************
+
+ext{
+    compileSdkVersion = 29
+    buildToolsVersion = "29.0.3"
+    versionCode = 2
+    versionName = '2.0'
+    libAndoidConstraintlayout = 'androidx.constraintlayout:constraintlayout:1.1.3'
+}
+
+//****************************************文件相关Api*****************************************
+
+//println '根工程绝对路径: ' + getRootDir().absolutePath
+//println '当前工程绝对路径: ' + getProjectDir().absolutePath
+//println '当前工程build目录绝对路径: ' + getBuildDir().absolutePath
+//
+//println getFileContent('gradle.properties')
+//def getFileContent(path){
+//    try {
+//        //相对当前project查找path文件
+//        def file = file(path)
+//        return file.text
+//    }catch(GradleException e){
+//        println 'file not found'
+//    }
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

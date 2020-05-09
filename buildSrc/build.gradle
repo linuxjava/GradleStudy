@@ -1,0 +1,62 @@
+//apply plugin: 'java-library'
+//
+//dependencies {
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//}
+//
+//sourceCompatibility = "7"
+//targetCompatibility = "7"
+
+
+// 引入 groovy 和 java 插件
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+//指定编码
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
+
+//sourceSets {
+//    main{
+//        groovy{
+//            srcDir 'src/main/groovy'
+//        }
+//        resources {
+//            srcDir 'src/main/resources'
+//        }
+//    }
+//}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        google()
+        jcenter()
+    }
+}
+
+repositories {
+    mavenLocal()
+    google()
+    jcenter()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:3.1.4'
+}
+
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = '1.0.0'
+//        pom.artifactId = 'myplugin'
+//        pom.groupId = 'com.xiao.gradle.plugin'
+//    }
+//}
+
+
+

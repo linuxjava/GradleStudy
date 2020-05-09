@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.xiao.gradle.plugin'
+apply from : 'task.gradle'
+
+android {
+    compileSdkVersion this.compileSdkVersion
+    buildToolsVersion this.buildToolsVersion
+    defaultConfig {
+        applicationId "com.gradle.study"
+        minSdkVersion 16
+        targetSdkVersion 29
+        versionCode this.versionCode
+        versionName this.versionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation this.libAndoidConstraintlayout
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+}
+
+IMoocReleaseInfo{
+    versionCode = rootProject.ext.versionCode
+    versionName = rootProject.ext.versionName
+    versionInfo = '12222222222'
+    filePath = 'releases.xml'
+}
+
+//println '---父工程: ' + this.getParent().name;
+//
+//copy {
+//    //可以拷贝一个文件或文件夹
+//    from 'build/outputs/apk'
+//    //输出可以指定file或path(getRootDir().absolutePath)
+//    into getRootDir().absolutePath + '/apk'
+//    //不拷贝
+//    exclude 'build/outputs/logs'
+//    //重命名(这里会输出所有拷贝的文件名)
+//    rename {String fileName ->
+//        if(fileName.endsWith(".apk"))
+//            return fileName + '_back'
+//        else {
+//            return fileName
+//        }
+//    }
+//}
+//
+//fileTree('build/outputs/apk'){FileTree fileTree ->
+//    fileTree.visit {FileTreeElement element ->
+//        println element.name + ':' + element.size
+//    }
+//}
