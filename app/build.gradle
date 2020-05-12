@@ -3,8 +3,8 @@ apply plugin: 'com.xiao.gradle.plugin'
 apply from : 'task.gradle'
 
 android {
-    compileSdkVersion this.compileSdkVersion
-    buildToolsVersion this.buildToolsVersion
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "com.gradle.study"
         minSdkVersion 16
@@ -35,6 +35,11 @@ IMoocReleaseInfo{
     versionName = rootProject.ext.versionName
     versionInfo = '12222222222'
     filePath = 'releases.xml'
+
+    inner{
+        innerName = 'inner test'
+        msg = 'sdfasdfasdfasdf'
+    }
 }
 
 //println '---父工程: ' + this.getParent().name;

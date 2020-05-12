@@ -326,6 +326,12 @@ import groovy.xml.MarkupBuilder
 //}
 
 
+//********************************whenTaskAdded**********************************
+//tasks.whenTaskAdded { Task task ->
+//    println task.group + ":" + task.name
+//}
+
+
 
 
 

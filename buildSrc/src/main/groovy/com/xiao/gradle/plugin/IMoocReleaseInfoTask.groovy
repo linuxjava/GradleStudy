@@ -14,6 +14,10 @@ class IMoocReleaseInfoTask extends DefaultTask{
     void action(){
         IMoocReleaseInfo releaseInfo = project.extensions.IMoocReleaseInfo
 
+        println releaseInfo
+        println releaseInfo.innerExt
+        //println project.extensions.inner
+
         File outFile = project.file(releaseInfo.filePath)
         def sw = new StringWriter();
         def xmlBuilder = new MarkupBuilder(sw)
